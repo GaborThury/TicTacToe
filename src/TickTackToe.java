@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class TickTackToe extends JFrame implements ActionListener{
+public class TickTackToe extends JFrame implements ActionListener {
 
     private int size;
     private JButton[][] buttons;
@@ -12,7 +12,7 @@ public class TickTackToe extends JFrame implements ActionListener{
     private int toWin;
 
     public TickTackToe(int size, int toWin) {
-        if (size < 3){
+        if (size < 3) {
             this.size = 3;
         } else {
             this.size = size;
@@ -22,8 +22,8 @@ public class TickTackToe extends JFrame implements ActionListener{
         this.toWin = toWin;
         firstPlayer = true;
         buttons = new JButton[this.size][this.size];
-
-        setTitle("Tick Tack Toe");
+        Color backgroundColor = new Color(80, 80, 80);
+        setTitle("Tic Tac Toe");
         setSize(500, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new GridLayout(this.size, this.size));
@@ -34,6 +34,7 @@ public class TickTackToe extends JFrame implements ActionListener{
     private void generateButtons() {
         Font font = new Font(Font.SANS_SERIF, Font.BOLD, 20);
         Insets m = new Insets(0, 0, 0, 0);
+        Color backgroundColor = new Color(80, 80, 80);
 
         for (int i = 0; i < this.size; i++) {
             for (int j = 0; j < this.size; j++) {
@@ -41,7 +42,7 @@ public class TickTackToe extends JFrame implements ActionListener{
                 button.setText("");
                 button.setFont(font);
                 button.setMargin(m);
-                button.setBackground(Color.white);
+                button.setBackground(backgroundColor);
                 button.setActionCommand(j + " " + i);
                 button.addActionListener(this);
                 this.add(button);
@@ -50,33 +51,27 @@ public class TickTackToe extends JFrame implements ActionListener{
         }
     }
 
-    private boolean checkWinner (String player) {
-        for (int i = 0; i < this.size; i++) {
-            int sameNextToEachOther = 0;
-            for (int j = 0; j < this.size; j++) {
-                if (buttons[i][j].getText().equals(player)) {
-                    sameNextToEachOther++;
-                } else {
-                    sameNextToEachOther = 0;
-                }
-                if (sameNextToEachOther >= toWin) {
-                    return true;
-                }
-            }
-        }
-        for (int i = 0; i < this.size; i++) {
-            int sameNextToEachOther = 0;
-            for (int j = 0; j < this.size; j++) {
-                if (buttons[j][i].getText().equals(player)) {
-                    sameNextToEachOther++;
-                } else {
-                    sameNextToEachOther = 0;
-                }
-                if (sameNextToEachOther >= toWin) {
-                    return true;
-                }
-            }
-        }
+    private boolean checkWinner(int i, int j, String player) {
+        int numberOfMarks = 1 +
+                countMarks(i, j, player, -1 , 1) +
+                countMarks(i, j, player, 1, -1);
+        if (numberOfMarks >= toWin) return true;
+
+        numberOfMarks = 1 +
+                countMarks(i, j, player, -1 , -1) +
+                countMarks(i, j, player, 1, 1);
+        if (numberOfMarks >= toWin) return true;
+
+        numberOfMarks = 1 +
+                countMarks(i, j, player, 0 , -1) +
+                countMarks(i, j, player, 0, 1);
+        if (numberOfMarks >= toWin) return true;
+
+        numberOfMarks = 1 +
+                countMarks(i, j, player, -1 , 0) +
+                countMarks(i, j, player, 1, 0);
+        if (numberOfMarks >= toWin) return true;
+
         return false;
     }
 
@@ -90,25 +85,46 @@ public class TickTackToe extends JFrame implements ActionListener{
         steps = 0;
     }
 
+    private int countMarks(int i, int j, String player, int stepI, int stepJ) {
+        int k = i + stepI;
+        int l = j + stepJ;
+        int counter = 0;
+
+        while (coordsInBounds(k, l) && buttons[k][l].getText().equals(player)) {
+            ++counter;
+            k += stepI;
+            l += stepJ;
+        }
+        return counter;
+    }
+
+    private boolean coordsInBounds(int i, int j) {
+        return i >= 0 && i < size && j >= 0 && j < size;
+    }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // System.out.println(e.getActionCommand());
         String[] coordinates = e.getActionCommand().split(" ");
         int j = Integer.parseInt(coordinates[0]);
         int i = Integer.parseInt(coordinates[1]);
+        Color redColor = new Color (220, 32, 32);
+        Color greenColor = new Color (67, 220, 32);
+
 
         if (buttons[i][j].getText().equals("")) {
             if (firstPlayer) {
                 buttons[i][j].setText("X");
+                buttons[i][j].setForeground(redColor);
                 firstPlayer = false;
             } else {
                 buttons[i][j].setText("O");
+                buttons[i][j].setForeground(greenColor);
                 firstPlayer = true;
             }
             steps++;
         }
-        if (checkWinner(buttons[i][j].getText())) {
+        if (checkWinner(i, j, buttons[i][j].getText())) {
             JOptionPane.showMessageDialog(this, "Game is over! " + buttons[i][j].getText() + " have won!", "Game over!", JOptionPane.INFORMATION_MESSAGE);
             clear();
         } else if (steps == this.size * this.size) {
