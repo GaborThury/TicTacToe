@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class TickTackToe extends JFrame implements ActionListener {
+public class TicTacToe extends JFrame implements ActionListener {
 
     private int size;
     private JButton[][] buttons;
@@ -11,7 +11,7 @@ public class TickTackToe extends JFrame implements ActionListener {
     private int steps;
     private int toWin;
 
-    public TickTackToe(int size, int toWin) {
+    public TicTacToe(int size, int toWin) {
         if (size < 3) {
             this.size = 3;
         } else {
@@ -108,7 +108,7 @@ public class TickTackToe extends JFrame implements ActionListener {
         String[] coordinates = e.getActionCommand().split(" ");
         int j = Integer.parseInt(coordinates[0]);
         int i = Integer.parseInt(coordinates[1]);
-        Color redColor = new Color (220, 32, 32);
+        Color redColor = new Color (246, 33, 33);
         Color greenColor = new Color (67, 220, 32);
 
 
